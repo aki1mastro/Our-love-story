@@ -28,7 +28,7 @@ body {
 /* --- ШАПКА --- */
 .header {
     height: 100vh;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('img/main_bg.jpg');
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('main_bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -277,4 +277,5 @@ footer {
     .header h1 { font-size: 2.8rem; }
     .left .content, .right .content { margin: 0; }
     .add-btn { bottom: 20px; right: 20px; width: 55px; height: 55px; font-size: 30px; }
+
 }
