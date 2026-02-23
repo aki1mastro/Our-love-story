@@ -10,7 +10,7 @@
 
     <header class="header">
         <div class="header-content">
-            <h1>Сабина & Аким</h1>
+            <h1>Сабина <span id="secret-trigger" style="cursor: pointer;" title="Тссс... это секрет!">&</span> Аким</h1>
             <p>История нашей любви</p>
             <div class="counter-box">
                 <span id="days-count">0</span>
@@ -43,12 +43,19 @@
         </div>
     </div>
 
+    <div id="love-modal" class="modal">
+        <div class="modal-content" style="text-align: center; padding: 40px 20px;">
+            <span class="close-btn" id="close-love-modal">&times;</span>
+            <h2 style="font-size: 3.5rem; margin: 0 0 15px 0;">❤️</h2>
+            <p id="love-reason-text" style="font-size: 1.2rem; font-weight: 500; color: #2d3436; line-height: 1.6;"></p>
+        </div>
+    </div>
+
     <script src="memories.js"></script> 
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        // Импортируем Storage для картинок
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
         // Твой конфиг
@@ -127,7 +134,7 @@
 
         loadAllMemories();
 
-        // Форма
+        // Форма добавления историй
         const modal = document.getElementById("add-modal");
         const btn = document.getElementById("add-btn");
         const closeBtn = document.getElementById("close-modal");
@@ -136,7 +143,6 @@
         closeBtn.onclick = () => { modal.style.display = "none"; }
         window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; }
 
-        // Кнопка сохранения
         document.getElementById("submit-memory").addEventListener("click", async () => {
             const dateVal = document.getElementById("new-date").value;
             const titleVal = document.getElementById("new-title").value;
@@ -162,7 +168,6 @@
             let memoryType = "event"; 
 
             try {
-                // Если выбрано фото - загружаем в Storage
                 if (fileInput.files.length > 0) {
                     statusMsg.innerText = "Грузим фото в облако... ⏳";
                     const file = fileInput.files[0];
@@ -175,7 +180,6 @@
 
                 statusMsg.innerText = "Сохраняем историю... ⏳";
 
-                // Записываем в Firestore
                 await addDoc(collection(db, "user_memories"), {
                     date: formattedDate,
                     title: titleVal,
@@ -201,7 +205,7 @@
             }
         });
 
-        // Анимация
+        // Анимация прокрутки
         function checkScroll() {
             const items = document.querySelectorAll('.memory-container');
             const triggerBottom = window.innerHeight / 5 * 4;
@@ -212,7 +216,7 @@
         }
         window.addEventListener('scroll', checkScroll);
 
-        const startDate = new Date('2025-04-14');
+        const startDate = new Date('2025-05-05');
         const countElement = document.getElementById('days-count');
         function updateCounter() {
             const now = new Date();
@@ -220,6 +224,49 @@
             countElement.innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
         }
         updateCounter();
+
+        // --- СЕКРЕТНАЯ ПАСХАЛКА (ГЕНЕРАТОР ПРИЧИН) ---
+        const reasons = [
+            // Романтичные
+            "За твою улыбку, которая с легкостью стирает усталость после долгого рабочего дня.",
+            "За то, что мы можем смеяться над чем угодно до слез.",
+            "За твой смех, который я готов слушать бесконечно.",
+            "За то, что ты понимаешь меня с полуслова и взгляда.",
+            "За твою нежность и заботу, которыми ты меня окружаешь.",
+            "За то, что рядом с тобой я хочу быть еще лучше.",
+            "За твои глаза, в которых можно утонуть.",
+            "За то, что ты — мой самый близкий человек и моя главная любовь.",
+            "За наши общие мечты и планы на будущее.",
+            "За то, что даже просто молчать рядом с тобой — это огромное счастье.",
+            "За то, что с тобой самый обычный день превращается в праздник.",
+            
+            // Инженерные и личные
+            "За то, что ты — моя самая красивая вселенная, сложнее и интереснее любого кода на Python.",
+            "За твою невероятную поддержку и тепло, которые греют меня все те две недели, пока я на вахте.",
+            "За то, что возвращение домой в субботу после перевахтовки — это лучший день, потому что там ждешь ты.",
+            "За то, что моя любовь к тебе работает без ошибок и сбоев, как бесконечный цикл.",
+            "За то, что никакая 3D-визуализация не сравнится с тем, какая ты красивая вживую.",
+            "За то, что ты всегда веришь в меня и мои проекты.",
+            "За то, что даже когда я далеко на работе в праздничные дни, я всегда чувствую твою любовь.",
+            "За то, что в интерфейсе моей жизни ты — самый главный и красивый элемент."
+        ];
+
+        const secretTrigger = document.getElementById("secret-trigger");
+        const loveModal = document.getElementById("love-modal");
+        const closeLoveModal = document.getElementById("close-love-modal");
+        const reasonText = document.getElementById("love-reason-text");
+
+        secretTrigger.onclick = () => {
+            const randomIndex = Math.floor(Math.random() * reasons.length);
+            reasonText.innerText = reasons[randomIndex];
+            loveModal.style.display = "flex";
+        }
+
+        closeLoveModal.onclick = () => { loveModal.style.display = "none"; }
+        // Чтобы секретное окно тоже закрывалось при клике мимо него
+        window.addEventListener('click', (event) => {
+            if (event.target == loveModal) loveModal.style.display = "none";
+        });
     </script>
 </body>
 </html>
