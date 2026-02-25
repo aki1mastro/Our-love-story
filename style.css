@@ -11,13 +11,16 @@
 }
 
 body {
-    /* Нежный теплый фон вместо скучного серого */
-    background: linear-gradient(135deg, #fff0f3 0%, #fdfbfb 100%);
-    background-attachment: fixed;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    color: var(--text-dark);
-    overflow-x: hidden;
+    padding: 0;
+    box-sizing: border-box;
+    /* Настройки фона */
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('main_bg.jpg');
+    background-size: cover;       /* Растягиваем на весь экран */
+    background-position: center;  /* Центрируем */
+    background-attachment: fixed; /* <--- САМОЕ ВАЖНОЕ: фон не будет двигаться при прокрутке */
+    background-repeat: no-repeat;
 }
 
 /* Красивый скроллбар */
@@ -28,16 +31,13 @@ body {
 /* --- ШАПКА --- */
 .header {
     height: 100vh;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('main_bg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: white;
+    /* Картинку убрали, оставили только отступы */
+    padding: 0 20px;
 }
 .header h1 { 
     font-size: 4rem; 
@@ -277,5 +277,70 @@ footer {
     .header h1 { font-size: 2.8rem; }
     .left .content, .right .content { margin: 0; }
     .add-btn { bottom: 20px; right: 20px; width: 55px; height: 55px; font-size: 30px; }
+}
+/* --- КНОПКА-ПАСХАЛКА --- */
+.magic-heart {
+    position: fixed; 
+    bottom: 30px; 
+    left: 30px; /* Размещаем слева, чтобы не мешать кнопке добавления историй */
+    width: 60px; 
+    height: 60px;
+    background: white; 
+    color: var(--primary); 
+    border-radius: 50%; 
+    font-size: 28px; 
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    cursor: pointer; 
+    z-index: 100;
+    transition: transform 0.3s;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+.magic-heart:hover { transform: scale(1.1); }
+/* --- ТРЕКЕР ВАХТЫ --- */
+.tracker-container {
+    max-width: 600px;
+    margin: -30px auto 40px; /* Чуть подтянем вверх к шапке */
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}
 
+.tracker-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.tracker-box h3 {
+    margin: 0 0 15px 0;
+    color: #2d3436;
+    font-size: 1.1rem;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 15px;
+    background: #dfe6e9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    display: none; /* Скрываем, если ты дома */
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%);
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+
+.tracker-days {
+    color: #636e72;
+    font-size: 0.9rem;
+    margin: 0;
 }
