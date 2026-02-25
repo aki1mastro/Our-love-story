@@ -1,26 +1,24 @@
-/* --- ПОДКЛЮЧЕНИЕ ШРИФТОВ --- */
+/* --- 1. ПОДКЛЮЧЕНИЕ ШРИФТОВ --- */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;800&family=Caveat:wght@600&display=swap');
 
-/* --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ --- */
+/* --- 2. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ --- */
 :root {
     --primary: #ff4b72;   /* Нежно-малиновый */
     --secondary: #ff7e67; /* Персиковый */
     --text-dark: #2d3436;
     --text-light: #636e72;
-    --card-bg: rgba(255, 255, 255, 0.75); /* Полупрозрачный белый */
+    --bg-color: #fff0f3;  /* Очень светлый розовый для фона ленты */
 }
 
+/* --- 3. ОСНОВНЫЕ НАСТРОЙКИ СТРАНИЦЫ --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Настройки фона */
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('main_bg.jpg');
-    background-size: cover;       /* Растягиваем на весь экран */
-    background-position: center;  /* Центрируем */
-    background-attachment: fixed; /* <--- САМОЕ ВАЖНОЕ: фон не будет двигаться при прокрутке */
-    background-repeat: no-repeat;
+    background-color: var(--bg-color); 
+    color: var(--text-dark);
+    overflow-x: hidden; /* Чтобы анимации не создавали горизонтальную прокрутку */
 }
 
 /* Красивый скроллбар */
@@ -28,7 +26,7 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
-/* --- ШАПКА --- */
+/* --- 4. ШАПКА (HEADER) - С ЭФФЕКТОМ КИНО --- */
 .header {
     height: 100vh;
     display: flex;
@@ -36,9 +34,37 @@ body {
     align-items: center;
     text-align: center;
     color: white;
-    /* Картинку убрали, оставили только отступы */
     padding: 0 20px;
+    position: relative;
+    overflow: hidden; /* ВАЖНО: Обрезает картинку при увеличении */
+    
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
+
+/* Виртуальный слой с картинкой для анимации Zoom */
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    
+    /* Твоя картинка */
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('main_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: -1; /* Позади текста */
+    
+    /* АНИМАЦИЯ: Медленное приближение */
+    animation: zoomEffect 20s infinite alternate;
+}
+
+.header-content {
+    z-index: 1;
+    /* АНИМАЦИЯ: Плавное появление текста */
+    animation: fadeInUp 1.5s ease-out;
+}
+
 .header h1 { 
     font-size: 4rem; 
     margin-bottom: 10px; 
@@ -55,26 +81,63 @@ body {
 /* Счетчик дней */
 .counter-box {
     margin-top: 30px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 20px 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px 40px;
     border-radius: 30px;
     border: 1px solid rgba(255,255,255,0.4);
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    display: inline-block;
 }
 #days-count { font-size: 3.5rem; font-weight: 800; display: block; line-height: 1; }
 .label { font-size: 0.9rem; font-weight: 500; letter-spacing: 1px; }
 
-/* --- ЛЕНТА ВРЕМЕНИ (TIMELINE) --- */
+
+/* --- 5. ТРЕКЕР ВАХТЫ (Белая карточка) --- */
+.tracker-container {
+    max-width: 600px;
+    margin: -40px auto 40px; 
+    padding: 0 20px;
+    position: relative;
+    z-index: 10; 
+}
+
+.tracker-box {
+    background: #ffffff;
+    padding: 25px 25px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(100, 100, 100, 0.1);
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.8);
+}
+
+.tracker-box h3 {
+    margin: 0;
+    color: #2d3436;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.progress-bar-bg {
+    width: 100%; height: 10px; background: #dfe6e9;
+    border-radius: 10px; overflow: hidden; margin: 15px 0 10px 0; display: none;
+}
+.progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%);
+    width: 0%; transition: width 1s ease-in-out;
+}
+.tracker-days { color: #636e72; font-size: 0.9rem; margin: 0; }
+
+
+/* --- 6. ЛЕНТА ВРЕМЕНИ (TIMELINE) --- */
 .timeline { 
     position: relative; 
     max-width: 1000px; 
-    margin: 80px auto; 
+    margin: 40px auto; 
     padding: 0 20px 100px 20px; 
 }
 
-/* Линия по центру */
 .timeline::after {
     content: ''; 
     position: absolute; 
@@ -83,7 +146,7 @@ body {
     top: 0; bottom: 0; left: 50%; 
     margin-left: -2px; 
     border-radius: 2px;
-    box-shadow: 0 0 10px rgba(255, 75, 114, 0.3);
+    opacity: 0.3;
 }
 
 .memory-container {
@@ -100,15 +163,6 @@ body {
 .left { left: 0; text-align: right; }
 .right { left: 50%; text-align: left; }
 
-/* Пульсирующие сердечки на линии */
-@keyframes heartbeat {
-    0% { transform: scale(1); }
-    15% { transform: scale(1.15); }
-    30% { transform: scale(1); }
-    45% { transform: scale(1.15); }
-    60% { transform: scale(1); }
-}
-
 .memory-container::after {
     content: '❤'; 
     position: absolute; 
@@ -121,90 +175,81 @@ body {
     z-index: 10;
     display: flex; justify-content: center; align-items: center; 
     font-size: 16px;
-    box-shadow: 0 0 15px rgba(255, 75, 114, 0.4);
-    animation: heartbeat 2.5s infinite;
+    box-shadow: 0 0 10px rgba(255, 75, 114, 0.2);
 }
 .left::after { right: -20px; }
 .right::after { left: -20px; }
 
-/* --- КАРТОЧКА С КОНТЕНТОМ (GLASSMORPHISM) --- */
+/* --- 7. КАРТОЧКА С КОНТЕНТОМ (БЕЛАЯ + ЭФФЕКТЫ) --- */
 .content {
-    padding: 30px; 
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.6);
-    border-radius: 24px;
-    box-shadow: 0 15px 35px rgba(255, 75, 114, 0.08); 
+    padding: 25px; 
+    background: white; 
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); 
     position: relative;
     max-width: 420px; 
-    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(0,0,0,0.02);
+    
+    /* Пружинистая анимация при наведении */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
 }
-.left .content { margin-left: auto; }
-.right .content { margin-right: auto; }
+.left .content { margin-left: auto; border-bottom-right-radius: 0; }
+.right .content { margin-right: auto; border-bottom-left-radius: 0; }
 
+/* Эффект свечения при наведении */
 .content:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 0 20px 40px rgba(255, 75, 114, 0.15);
+    transform: translateY(-8px) scale(1.02); 
+    box-shadow: 0 20px 40px rgba(255, 75, 114, 0.15); 
+    z-index: 5;
 }
 
-/* Рукописная дата */
 .date { 
     font-family: 'Caveat', cursive;
     color: var(--primary); 
     font-size: 1.6rem; 
     margin-bottom: 5px; 
+    display: block;
 }
-h2 { margin: 0 0 15px 0; font-size: 1.5rem; color: var(--text-dark); }
+h2 { margin: 0 0 10px 0; font-size: 1.4rem; color: var(--text-dark); line-height: 1.2; }
 
-/* --- ДИЗАЙН ПЕРЕПИСКИ (КАК В МЕССЕНДЖЕРЕ) --- */
+.description { font-size: 1rem; line-height: 1.6; color: var(--text-light); margin: 0; }
+
 .chat-quote {
-    background: white; 
+    background: #f1f2f6; 
     padding: 15px 20px; 
-    border-radius: 20px;
-    border-bottom-left-radius: 5px; /* Хвостик сообщения */
-    margin: 15px 0 0 0; 
+    border-radius: 15px;
+    margin: 10px 0 0 0; 
     color: var(--text-dark); 
     text-align: left;
     font-size: 0.95rem; 
-    line-height: 1.5;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-left: 4px solid var(--primary);
 }
-/* Для правой стороны делаем другой цвет и хвостик справа */
-.right .chat-quote {
-    background: #ffe3e8;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 5px;
-}
-.chat-quote b { color: var(--primary); font-weight: 600; display: block; margin-bottom: 5px; font-size: 0.85rem;}
+.chat-quote b { color: var(--primary); display: block; margin-bottom: 3px; }
 
-/* --- ФОТОГРАФИИ --- */
+.event-text {
+    background: #fff0f3;
+    color: #d63031;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px dashed #ff7675;
+}
+
 .img-container {
     width: 100%; margin-top: 15px; border-radius: 15px; overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
-.img-container img { width: 100%; height: auto; display: block; transition: transform 0.6s; }
-.img-container:hover img { transform: scale(1.05); }
+.img-container img { width: 100%; height: auto; display: block; }
 
-/* Тексты */
-.description { font-size: 1rem; line-height: 1.6; color: var(--text-light); margin: 0; }
-.event-text { 
-    background: rgba(255, 126, 103, 0.1); 
-    padding: 15px; 
-    border-radius: 12px; 
-    border-left: 4px solid var(--secondary); 
-    color: var(--text-dark);
-}
 
-/* --- СТАТИСТИКА И ФУТЕР --- */
+/* --- 8. СТАТИСТИКА И ФУТЕР --- */
 .stats { 
     background: white; 
     padding: 60px 20px; 
     text-align: center; 
+    margin-top: 50px;
     border-top: 1px solid rgba(0,0,0,0.05); 
 }
-.stats-grid { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; margin-top: 30px; }
-.stat-item h3 { font-size: 3rem; color: var(--primary); margin: 0; font-weight: 800;}
+.stats-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+.stat-item h3 { font-size: 2.5rem; color: var(--primary); margin: 0; font-weight: 800;}
 .stat-item p { color: var(--text-light); font-weight: 500; margin-top: 5px;}
 
 footer { 
@@ -215,179 +260,101 @@ footer {
     font-weight: 300;
 }
 
-/* --- КНОПКА ДОБАВЛЕНИЯ И ФОРМА FIREBASE --- */
+/* --- 9. КНОПКИ УПРАВЛЕНИЯ --- */
 .add-btn {
     position: fixed; bottom: 30px; right: 30px;
-    width: 65px; height: 65px;
+    width: 60px; height: 60px;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white; border-radius: 50%; font-size: 35px; border: none;
+    color: white; border-radius: 50%; font-size: 30px; border: none;
     box-shadow: 0 10px 25px rgba(255, 75, 114, 0.4);
     cursor: pointer; z-index: 100; transition: transform 0.3s;
     display: flex; justify-content: center; align-items: center;
 }
-.add-btn:hover { transform: scale(1.1) rotate(90deg); }
+.add-btn:hover { transform: scale(1.1); }
 
+/* Пасхалка */
+.magic-heart {
+    position: fixed; bottom: 30px; left: 30px;
+    width: 50px; height: 50px;
+    background: white; color: var(--primary);
+    border-radius: 50%; font-size: 24px; border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    cursor: pointer; z-index: 100;
+}
+
+/* --- 10. МОДАЛЬНОЕ ОКНО --- */
 .modal {
     display: none; position: fixed; z-index: 200; left: 0; top: 0;
     width: 100%; height: 100%;
-    background-color: rgba(45, 52, 54, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(0,0,0, 0.6);
     justify-content: center; align-items: center;
 }
 .modal-content {
-    background: white; padding: 40px 30px; border-radius: 24px;
+    background: white; padding: 30px; border-radius: 20px;
     width: 90%; max-width: 400px; position: relative;
     box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    animation: slideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-@keyframes slideDown {
-    from { transform: translateY(-30px) scale(0.95); opacity: 0; }
-    to { transform: translateY(0) scale(1); opacity: 1; }
 }
 .close-btn {
     position: absolute; right: 20px; top: 15px;
-    font-size: 28px; cursor: pointer; color: #b2bec3; transition: 0.2s;
+    font-size: 28px; cursor: pointer; color: #b2bec3;
 }
-.close-btn:hover { color: var(--primary); }
-
 .modal-content input, .modal-content textarea {
-    width: 100%; padding: 15px; margin: 10px 0;
-    border: 1px solid #dfe6e9; border-radius: 12px;
-    box-sizing: border-box; font-family: 'Montserrat', sans-serif;
-    background: #fdfbfb; transition: 0.3s;
-}
-.modal-content input:focus, .modal-content textarea:focus {
-    outline: none; border-color: var(--primary); background: white;
+    width: 100%; padding: 12px; margin: 8px 0;
+    border: 1px solid #dfe6e9; border-radius: 10px;
+    box-sizing: border-box; font-family: inherit;
 }
 .modal-content button.save-btn {
-    width: 100%; padding: 15px; margin-top: 15px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white; border: none; border-radius: 12px;
-    font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+    width: 100%; padding: 12px; margin-top: 15px;
+    background: var(--primary); color: white; border: none; 
+    border-radius: 10px; font-size: 1rem; cursor: pointer;
 }
-.modal-content button.save-btn:hover { box-shadow: 0 8px 20px rgba(255, 75, 114, 0.3); transform: translateY(-2px); }
 
-/* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
+
+/* --- 11. АНИМАЦИИ (ВЫНЕСЕНЫ ИЗ MEDIA QUERY) --- */
+
+/* 1. Эффект приближения фона */
+@keyframes zoomEffect {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); } /* Увеличиваем на 15% */
+}
+
+/* 2. Всплытие текста снизу */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* --- 12. АДАПТИВ ДЛЯ ТЕЛЕФОНОВ --- */
 @media screen and (max-width: 768px) {
+    /* Таймлайн сбоку */
     .timeline::after { left: 30px; }
     .memory-container { width: 100%; padding-left: 70px; padding-right: 20px; }
     .left, .right { left: 0; text-align: left; }
     .left::after, .right::after { left: 11px; }
-    .header h1 { font-size: 2.8rem; }
-    .left .content, .right .content { margin: 0; }
-    .add-btn { bottom: 20px; right: 20px; width: 55px; height: 55px; font-size: 30px; }
-}
-/* --- КНОПКА-ПАСХАЛКА --- */
-.magic-heart {
-    position: fixed; 
-    bottom: 30px; 
-    left: 30px; /* Размещаем слева, чтобы не мешать кнопке добавления историй */
-    width: 60px; 
-    height: 60px;
-    background: white; 
-    color: var(--primary); 
-    border-radius: 50%; 
-    font-size: 28px; 
-    border: none;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    cursor: pointer; 
-    z-index: 100;
-    transition: transform 0.3s;
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-}
-.magic-heart:hover { transform: scale(1.1); }
-/* --- ТРЕКЕР ВАХТЫ (Обновленный стиль) --- */
-.tracker-container {
-    max-width: 600px;
-    /* Отрицательный отступ тянет блок вверх, чтобы он красиво наехал на фото */
-    margin: -40px auto 40px; 
-    padding: 0 20px; /* Отступы по бокам, чтобы не прилипало к краям экрана */
-    position: relative;
-    z-index: 10; /* Чтобы блок был ПОВЕРХ картинки */
-}
-
-.tracker-box {
-    background: rgba(255, 255, 255, 0.95); /* Слегка прозрачный белый */
-    backdrop-filter: blur(10px); /* Эффект матового стекла */
-    -webkit-backdrop-filter: blur(10px); /* Для iPhone */
-    padding: 20px 25px;
-    border-radius: 25px; /* Сильные закругления */
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15); /* Мягкая тень */
-    text-align: center; /* Текст строго по центру */
-    border: 1px solid rgba(255,255,255,0.6);
-}
-
-.tracker-box h3 {
-    margin: 0;
-    color: #2d3436;
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.4;
-}
-
-/* Полоска загрузки (если она появится когда ты на вахте) */
-.progress-bar-bg {
-    width: 100%;
-    height: 10px;
-    background: #dfe6e9;
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 15px 0 10px 0;
-    display: none;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%);
-    width: 0%;
-    transition: width 1s ease-in-out;
-}
-
-.tracker-days {
-    color: #636e72;
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-/* --- АДАПТИВ ДЛЯ ТЕЛЕФОНОВ --- */
-@media screen and (max-width: 768px) {
-    .tracker-container {
-        /* На телефоне поднимаем чуть меньше, чтобы не закрыть счетчик дней */
-        margin-top: -30px; 
-    }
     
-    .tracker-box {
-        padding: 15px 20px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
+    /* Шапка */
+    .header h1 { font-size: 2.5rem; }
+    .counter-box { padding: 10px 30px; }
+    #days-count { font-size: 2.8rem; }
     
-    .tracker-box h3 {
-        font-size: 1rem; /* Чуть меньше шрифт, чтобы влезало */
+    /* Трекер */
+    .tracker-container { margin-top: -30px; }
+    .tracker-box { padding: 15px 20px; }
+    .tracker-box h3 { font-size: 1rem; }
+    
+    /* Убираем лишние отступы у карточек */
+    .left .content, .right .content { margin: 0; border-radius: 15px; }
+    
+    /* Слегка уменьшаем анимацию на телефоне */
+    .content:hover {
+        transform: none !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
     }
-}
-
-.progress-bar-bg {
-    width: 100%;
-    height: 15px;
-    background: #dfe6e9;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    display: none; /* Скрываем, если ты дома */
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%);
-    width: 0%;
-    transition: width 1s ease-in-out;
-}
-
-.tracker-days {
-    color: #636e72;
-    font-size: 0.9rem;
-    margin: 0;
 }
