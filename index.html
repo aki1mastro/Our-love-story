@@ -18,6 +18,15 @@
             </div>
         </div>
     </header>
+    <div class="tracker-container">
+        <div class="tracker-box">
+            <h3 id="tracker-status">Загрузка статуса...</h3>
+            <div class="progress-bar-bg" id="progress-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <p id="tracker-days" class="tracker-days"></p>
+        </div>
+    </div>
 
     <section class="timeline" id="timeline-container">
         </section>
@@ -50,6 +59,27 @@
             <p id="love-reason-text" style="font-size: 1.2rem; font-weight: 500; color: #2d3436; line-height: 1.6;"></p>
         </div>
     </div>
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>1</h3>
+                <p>Любовь на двоих</p>
+            </div>
+            <div class="stat-item">
+                <h3>10000+</h3>
+                <p>Сообщений</p>
+            </div>
+            <div class="stat-item">
+                <h3>∞</h3>
+                <p>Счастливых моментов</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Created with ❤️ for Sabina</p>
+        <p style="font-size: 0.8rem; opacity: 0.7;">2026</p>
+    </footer>
 
     <script src="memories.js"></script> 
 
@@ -267,6 +297,42 @@
         window.addEventListener('click', (event) => {
             if (event.target == loveModal) loveModal.style.display = "none";
         });
+        // --- УМНЫЙ ТРЕКЕР ВАХТЫ (Версия 2.0: "Мы") ---
+        function updateShiftTracker() {
+            // Дата начала одной из вахт (Эталон: 10 января 2026)
+            const referenceDate = new Date('2026-01-10T00:00:00'); 
+            const now = new Date();
+            
+            // Разница в миллисекундах
+            const diffTime = now - referenceDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            // Полный цикл = 28 дней (14 работа + 14 дом)
+            const cycleDay = diffDays % 28;
+
+            const statusTitle = document.getElementById('tracker-status');
+            const progressBar = document.getElementById('progress-bg');
+            const progressFill = document.getElementById('progress-fill');
+            const daysText = document.getElementById('tracker-days');
+
+            if (cycleDay < 14) {
+                // ТЫ НА ВАХТЕ (0-13 день цикла)
+                const daysLeft = 14 - cycleDay;
+                const percentDone = ((cycleDay) / 14) * 100;
+                
+                statusTitle.innerText = "До наших обнимашек осталось:";
+                progressBar.style.display = "block";
+                setTimeout(() => { progressFill.style.width = percentDone + "%"; }, 100);
+                daysText.innerText = `${daysLeft} дн.`;
+            } else {
+                // ТЫ ДОМА (14-27 день цикла)
+                statusTitle.innerText = "Наслаждаемся каждой минутой вместе ✨";
+                progressBar.style.display = "none";
+                daysText.innerText = "";
+            }
+        }
+
+        updateShiftTracker();
     </script>
 </body>
 </html>
