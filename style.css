@@ -299,27 +299,74 @@ footer {
     align-items: center;
 }
 .magic-heart:hover { transform: scale(1.1); }
-/* --- ТРЕКЕР ВАХТЫ --- */
+/* --- ТРЕКЕР ВАХТЫ (Обновленный стиль) --- */
 .tracker-container {
     max-width: 600px;
-    margin: -30px auto 40px; /* Чуть подтянем вверх к шапке */
-    padding: 0 20px;
+    /* Отрицательный отступ тянет блок вверх, чтобы он красиво наехал на фото */
+    margin: -40px auto 40px; 
+    padding: 0 20px; /* Отступы по бокам, чтобы не прилипало к краям экрана */
     position: relative;
-    z-index: 2;
+    z-index: 10; /* Чтобы блок был ПОВЕРХ картинки */
 }
 
 .tracker-box {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    text-align: center;
+    background: rgba(255, 255, 255, 0.95); /* Слегка прозрачный белый */
+    backdrop-filter: blur(10px); /* Эффект матового стекла */
+    -webkit-backdrop-filter: blur(10px); /* Для iPhone */
+    padding: 20px 25px;
+    border-radius: 25px; /* Сильные закругления */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15); /* Мягкая тень */
+    text-align: center; /* Текст строго по центру */
+    border: 1px solid rgba(255,255,255,0.6);
 }
 
 .tracker-box h3 {
-    margin: 0 0 15px 0;
+    margin: 0;
     color: #2d3436;
     font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Полоска загрузки (если она появится когда ты на вахте) */
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: #dfe6e9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0 10px 0;
+    display: none;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%);
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+
+.tracker-days {
+    color: #636e72;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* --- АДАПТИВ ДЛЯ ТЕЛЕФОНОВ --- */
+@media screen and (max-width: 768px) {
+    .tracker-container {
+        /* На телефоне поднимаем чуть меньше, чтобы не закрыть счетчик дней */
+        margin-top: -30px; 
+    }
+    
+    .tracker-box {
+        padding: 15px 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .tracker-box h3 {
+        font-size: 1rem; /* Чуть меньше шрифт, чтобы влезало */
+    }
 }
 
 .progress-bar-bg {
