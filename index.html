@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сабина и Аким | Наша История</title>
     <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 <body>
 
     <header class="header">
         <div class="header-content">
-            <h1>Сабина <span id="secret-trigger" ...>&</span> Аким</h1>
+            <h1>Сабина <span id="secret-trigger" style="cursor: pointer;">&</span> Аким</h1>
             <p>История нашей любви</p>
             <div class="counter-box">
                 <span id="days-count">0</span>
                 <span class="label">Дней вместе</span>
             </div>
-        </div> </header>
+        </div>
     </header>
+
     <div class="tracker-container">
         <div class="tracker-box">
             <h3 id="tracker-status">Загрузка статуса...</h3>
@@ -31,7 +35,13 @@
     <section class="timeline" id="timeline-container">
         </section>
 
-    <button id="add-btn" class="add-btn">+</button>
+    <section class="map-section">
+        <h2 style="text-align: center; font-family: 'Montserrat', sans-serif; font-size: 2rem; color: #2d3436; margin-bottom: 20px;">Наши места</h2>
+        <div id="love-map"></div>
+    </section>
+
+    <button id="add-map-btn" class="add-map-btn" title="Добавить место на карту">📍</button>
+    <button id="add-btn" class="add-btn" title="Добавить историю">+</button>
 
     <div id="add-modal" class="modal">
         <div class="modal-content">
@@ -52,6 +62,27 @@
         </div>
     </div>
 
+    <div id="add-map-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-map-modal">&times;</span>
+            <h2 style="margin-top: 0; color: #2d3436;">Новое место</h2>
+            
+            <input type="text" id="new-map-title" placeholder="Название (например: БАО)" required>
+            <textarea id="new-map-desc" placeholder="Описание (Что там было?)" rows="2" required></textarea>
+            
+            <p style="font-size: 0.9rem; color: #636e72; margin-top: 10px; margin-bottom: 5px;">📍 Тапни на карту, чтобы поставить метку:</p>
+            <div id="mini-map" style="height: 180px; width: 100%; border-radius: 10px; border: 1px solid #dfe6e9; margin-bottom: 10px; z-index: 1;"></div>
+            
+            <input type="hidden" id="new-map-lat">
+            <input type="hidden" id="new-map-lng">
+
+            <input type="password" id="new-map-password" placeholder="Секретный пароль" required>
+            
+            <button id="submit-map-marker" class="save-btn" style="background: #0984e3;">Добавить на карту</button>
+            <p id="map-status-msg" style="text-align: center; color: #0984e3; font-size: 0.9rem; margin-top: 10px; font-weight: bold;"></p>
+        </div>
+    </div>
+
     <div id="love-modal" class="modal">
         <div class="modal-content" style="text-align: center; padding: 40px 20px;">
             <span class="close-btn" id="close-love-modal">&times;</span>
@@ -59,11 +90,12 @@
             <p id="love-reason-text" style="font-size: 1.2rem; font-weight: 500; color: #2d3436; line-height: 1.6;"></p>
         </div>
     </div>
+
     <section class="stats">
         <div class="stats-grid">
             <div class="stat-item">
                 <h3>1</h3>
-                <p>Любовь</p>
+                <p>Любовь на двоих</p>
             </div>
             <div class="stat-item">
                 <h3>10000+</h3>
@@ -81,14 +113,11 @@
         <p style="font-size: 0.8rem; opacity: 0.7;">2026</p>
     </footer>
 
-    <script src="memories.js"></script> 
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
-        // Твой конфиг
         const firebaseConfig = {
             apiKey: "AIzaSyBi-chMoOpwQsTq9MWqxJ_qXuNDyMM5NpY",
             authDomain: "love-story-2fe60.firebaseapp.com",
@@ -111,6 +140,7 @@
             return new Date(`${year}-${month}-${day}`);
         }
 
+        // --- 1. ЛОГИКА ИСТОРИЙ ---
         function renderTimeline(allData) {
             container.innerHTML = ""; 
             allData.sort((a, b) => parseDate(a.date) - parseDate(b.date));
@@ -148,31 +178,130 @@
 
         async function loadAllMemories() {
             let combinedMemories = [];
-            if (typeof memories !== 'undefined') combinedMemories = [...memories];
-
             try {
                 const querySnapshot = await getDocs(collection(db, "user_memories"));
-                querySnapshot.forEach((doc) => {
-                    combinedMemories.push(doc.data());
-                });
-            } catch (error) {
-                console.error("Ошибка базы данных:", error);
-            }
-
+                querySnapshot.forEach((doc) => { combinedMemories.push(doc.data()); });
+            } catch (error) { console.error("Ошибка БД:", error); }
             renderTimeline(combinedMemories);
         }
 
         loadAllMemories();
 
-        // Форма добавления историй
+        // --- 2. ЛОГИКА ГЛАВНОЙ КАРТЫ ---
+        async function initAndLoadMap() {
+            const mapContainer = document.getElementById('love-map');
+            if (!mapContainer) return;
+
+            const map = L.map('love-map', {
+                center: [43.2389, 76.8897], 
+                zoom: 10,
+                zoomControl: false,
+                scrollWheelZoom: false 
+            });
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            const heartIcon = L.divIcon({
+                className: 'custom-map-marker',
+                html: '❤️',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15],
+                popupAnchor: [0, -15]
+            });
+
+            window.addEventListener('resize', () => map.invalidateSize());
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "map_markers"));
+                querySnapshot.forEach((doc) => {
+                    const loc = doc.data();
+                    if (loc.lat && loc.lng) {
+                        const marker = L.marker([loc.lat, loc.lng], {icon: heartIcon}).addTo(map);
+                        marker.bindPopup(`
+                            <strong style="color: #ff4b72; font-family: 'Montserrat', sans-serif; font-size: 1.1rem;">${loc.title}</strong><br>
+                            <span style="font-family: 'Segoe UI', sans-serif; color: #2d3436;">${loc.desc}</span>
+                        `);
+                    }
+                });
+            } catch (error) {
+                console.error("Ошибка загрузки точек карты:", error);
+            }
+        }
+        initAndLoadMap();
+
+        // --- 3. ЛОГИКА МОДАЛЬНЫХ ОКОН И МИНИ-КАРТЫ ---
         const modal = document.getElementById("add-modal");
         const btn = document.getElementById("add-btn");
         const closeBtn = document.getElementById("close-modal");
 
-        btn.onclick = () => { modal.style.display = "flex"; }
-        closeBtn.onclick = () => { modal.style.display = "none"; }
-        window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; }
+        const mapModal = document.getElementById("add-map-modal");
+        const mapBtn = document.getElementById("add-map-btn");
+        const closeMapBtn = document.getElementById("close-map-modal");
 
+        const loveModal = document.getElementById("love-modal");
+        const secretTrigger = document.getElementById("secret-trigger");
+        const closeLoveModal = document.getElementById("close-love-modal");
+
+        let miniMap;
+        let miniMarker;
+        const smallHeartIcon = L.divIcon({
+            className: 'custom-map-marker',
+            html: '❤️',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
+        // Открытие окон
+        btn.onclick = () => { modal.style.display = "flex"; }
+        
+        // Открытие окна карты и инициализация мини-карты
+        mapBtn.onclick = () => { 
+            mapModal.style.display = "flex"; 
+            
+            if (!miniMap) {
+                // Центруем на Алматы при первом открытии
+                miniMap = L.map('mini-map').setView([43.2389, 76.8897], 11);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(miniMap);
+
+                // Слушаем клик по мини-карте
+                miniMap.on('click', function(e) {
+                    if (miniMarker) { miniMap.removeLayer(miniMarker); }
+                    miniMarker = L.marker(e.latlng, {icon: smallHeartIcon}).addTo(miniMap);
+                    
+                    // Записываем скрытые координаты
+                    document.getElementById('new-map-lat').value = e.latlng.lat;
+                    document.getElementById('new-map-lng').value = e.latlng.lng;
+                });
+            }
+            
+            // ВАЖНО: Пересчитываем размер карты после того как окно стало видимым (display: flex)
+            setTimeout(() => { miniMap.invalidateSize(); }, 200);
+        }
+
+        secretTrigger.onclick = () => {
+            const randomIndex = Math.floor(Math.random() * reasons.length);
+            document.getElementById("love-reason-text").innerText = reasons[randomIndex];
+            loveModal.style.display = "flex";
+        }
+
+        // Закрытие окон
+        closeBtn.onclick = () => { modal.style.display = "none"; }
+        closeMapBtn.onclick = () => { mapModal.style.display = "none"; }
+        closeLoveModal.onclick = () => { loveModal.style.display = "none"; }
+
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) modal.style.display = "none";
+            if (event.target == mapModal) mapModal.style.display = "none";
+            if (event.target == loveModal) loveModal.style.display = "none";
+        });
+
+        // --- СОХРАНЕНИЕ ИСТОРИИ ---
         document.getElementById("submit-memory").addEventListener("click", async () => {
             const dateVal = document.getElementById("new-date").value;
             const titleVal = document.getElementById("new-title").value;
@@ -181,41 +310,26 @@
             const fileInput = document.getElementById("new-image");
             const statusMsg = document.getElementById("status-msg");
 
-            if (!dateVal || !titleVal || !textVal) {
-                statusMsg.innerText = "Заполните текстовые поля!";
-                return;
-            }
-
-            if (passVal !== SECRET_PASSWORD) {
-                statusMsg.innerText = "Неверный пароль!";
-                return;
-            }
+            if (!dateVal || !titleVal || !textVal) { statusMsg.innerText = "Заполните текстовые поля!"; return; }
+            if (passVal !== SECRET_PASSWORD) { statusMsg.innerText = "Неверный пароль!"; return; }
 
             const [year, month, day] = dateVal.split('-');
             const formattedDate = `${day}.${month}.${year}`;
-            
-            let imageUrl = "";
-            let memoryType = "event"; 
+            let imageUrl = ""; let memoryType = "event"; 
 
             try {
                 if (fileInput.files.length > 0) {
-                    statusMsg.innerText = "Грузим фото в облако... ⏳";
+                    statusMsg.innerText = "Грузим фото... ⏳";
                     const file = fileInput.files[0];
                     const storageReference = ref(storage, 'memories_photos/' + Date.now() + '_' + file.name);
-                    
                     await uploadBytes(storageReference, file);
                     imageUrl = await getDownloadURL(storageReference);
                     memoryType = "photo"; 
                 }
 
-                statusMsg.innerText = "Сохраняем историю... ⏳";
-
+                statusMsg.innerText = "Сохраняем... ⏳";
                 await addDoc(collection(db, "user_memories"), {
-                    date: formattedDate,
-                    title: titleVal,
-                    text: textVal,
-                    type: memoryType,
-                    image: imageUrl
+                    date: formattedDate, title: titleVal, text: textVal, type: memoryType, image: imageUrl
                 });
                 
                 statusMsg.innerText = "Готово! ❤️";
@@ -228,11 +342,45 @@
                     statusMsg.innerText = '';
                     loadAllMemories(); 
                 }, 1500);
+            } catch (e) { statusMsg.innerText = "Ошибка: " + e.message; }
+        });
 
-            } catch (e) {
-                statusMsg.innerText = "Ошибка: " + e.message;
-                console.error(e);
+        // --- СОХРАНЕНИЕ ТОЧКИ НА КАРТУ (УЛУЧШЕННЫЙ UX) ---
+        document.getElementById("submit-map-marker").addEventListener("click", async () => {
+            const titleVal = document.getElementById("new-map-title").value;
+            const descVal = document.getElementById("new-map-desc").value;
+            const passVal = document.getElementById("new-map-password").value;
+            const statusMsg = document.getElementById("map-status-msg");
+            
+            // Читаем из скрытых инпутов
+            const latVal = document.getElementById("new-map-lat").value;
+            const lngVal = document.getElementById("new-map-lng").value;
+
+            if (!titleVal || !descVal) { statusMsg.innerText = "Заполните название и описание!"; return; }
+            
+            // Проверяем, тапнул ли пользователь по карте
+            if (!latVal || !lngVal) { 
+                statusMsg.innerText = "Пожалуйста, тапните на место на мини-карте! 📍"; 
+                return; 
             }
+            
+            if (passVal !== SECRET_PASSWORD) { statusMsg.innerText = "Неверный пароль!"; return; }
+
+            const lat = parseFloat(latVal);
+            const lng = parseFloat(lngVal);
+
+            try {
+                statusMsg.innerText = "Отправляем на карту... ⏳";
+                await addDoc(collection(db, "map_markers"), {
+                    title: titleVal,
+                    desc: descVal,
+                    lat: lat,
+                    lng: lng
+                });
+                
+                statusMsg.innerText = "Добавлено! 📍 Перезагрузка...";
+                setTimeout(() => { window.location.reload(); }, 1500);
+            } catch (e) { statusMsg.innerText = "Ошибка: " + e.message; }
         });
 
         // Анимация прокрутки
@@ -255,9 +403,7 @@
         }
         updateCounter();
 
-        // --- СЕКРЕТНАЯ ПАСХАЛКА (ГЕНЕРАТОР ПРИЧИН) ---
         const reasons = [
-            // Романтичные
             "За твою улыбку, которая с легкостью стирает усталость после долгого рабочего дня.",
             "За то, что мы можем смеяться над чем угодно до слез.",
             "За твой смех, который я готов слушать бесконечно.",
@@ -269,9 +415,6 @@
             "За наши общие мечты и планы на будущее.",
             "За то, что даже просто молчать рядом с тобой — это огромное счастье.",
             "За то, что с тобой самый обычный день превращается в праздник.",
-            
-            // Инженерные и личные
-            "За то, что ты — моя самая красивая вселенная, сложнее и интереснее любого кода на Python.",
             "За твою невероятную поддержку и тепло, которые греют меня все те две недели, пока я на вахте.",
             "За то, что возвращение домой в субботу после перевахтовки — это лучший день, потому что там ждешь ты.",
             "За то, что моя любовь к тебе работает без ошибок и сбоев, как бесконечный цикл.",
@@ -281,33 +424,11 @@
             "За то, что в интерфейсе моей жизни ты — самый главный и красивый элемент."
         ];
 
-        const secretTrigger = document.getElementById("secret-trigger");
-        const loveModal = document.getElementById("love-modal");
-        const closeLoveModal = document.getElementById("close-love-modal");
-        const reasonText = document.getElementById("love-reason-text");
-
-        secretTrigger.onclick = () => {
-            const randomIndex = Math.floor(Math.random() * reasons.length);
-            reasonText.innerText = reasons[randomIndex];
-            loveModal.style.display = "flex";
-        }
-
-        closeLoveModal.onclick = () => { loveModal.style.display = "none"; }
-        // Чтобы секретное окно тоже закрывалось при клике мимо него
-        window.addEventListener('click', (event) => {
-            if (event.target == loveModal) loveModal.style.display = "none";
-        });
-        // --- УМНЫЙ ТРЕКЕР ВАХТЫ (Версия 2.0: "Мы") ---
         function updateShiftTracker() {
-            // Дата начала одной из вахт (Эталон: 10 января 2026)
             const referenceDate = new Date('2026-01-10T00:00:00'); 
             const now = new Date();
-            
-            // Разница в миллисекундах
             const diffTime = now - referenceDate;
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            
-            // Полный цикл = 28 дней (14 работа + 14 дом)
             const cycleDay = diffDays % 28;
 
             const statusTitle = document.getElementById('tracker-status');
@@ -316,24 +437,19 @@
             const daysText = document.getElementById('tracker-days');
 
             if (cycleDay < 14) {
-                // ТЫ НА ВАХТЕ (0-13 день цикла)
                 const daysLeft = 14 - cycleDay;
                 const percentDone = ((cycleDay) / 14) * 100;
-                
                 statusTitle.innerText = "До наших обнимашек осталось:";
                 progressBar.style.display = "block";
                 setTimeout(() => { progressFill.style.width = percentDone + "%"; }, 100);
                 daysText.innerText = `${daysLeft} дн.`;
             } else {
-                // ТЫ ДОМА (14-27 день цикла)
                 statusTitle.innerText = "Наслаждаемся каждой минутой вместе ✨";
                 progressBar.style.display = "none";
                 daysText.innerText = "";
             }
         }
-
         updateShiftTracker();
     </script>
 </body>
 </html>
-
