@@ -134,6 +134,34 @@
         const SECRET_PASSWORD = "1404"; 
         const container = document.getElementById('timeline-container');
 
+        // ==========================================
+        // НАСТРОЙКИ TELEGRAM БОТА (ВСТАВЬ СВОИ ДАННЫЕ)
+        // ==========================================
+        const TELEGRAM_BOT_TOKEN = "8676989738:AAEWlwAMKJVBmrmAWrYPnQlZXE-zxTiz3lw"; // Например: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+        const TELEGRAM_CHAT_ID = "338255825";              // Например: "123456789"
+
+        async function sendTelegramNotification(text) {
+            // Если токен не настроен, просто пропускаем (чтобы сайт не ломался)
+            if (TELEGRAM_BOT_TOKEN === "8676989738:AAEWlwAMKJVBmrmAWrYPnQlZXE-zxTiz3lw") return; 
+            
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: text,
+                        parse_mode: 'HTML' // Позволяет использовать жирный шрифт в сообщениях
+                    })
+                });
+            } catch (error) {
+                console.error("Ошибка отправки в Telegram:", error);
+            }
+        }
+        // ==========================================
+
+
         function parseDate(dateStr) {
             if (!dateStr || !dateStr.includes('.')) return new Date();
             const [day, month, year] = dateStr.split('.');
@@ -195,8 +223,8 @@
             const map = L.map('love-map', {
                 center: [43.2389, 76.8897], 
                 zoom: 10,
-                zoomControl: false,
-                scrollWheelZoom: false 
+                zoomControl: true,
+                scrollWheelZoom: true 
             });
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -255,32 +283,23 @@
             iconAnchor: [10, 10]
         });
 
-        // Открытие окон
         btn.onclick = () => { modal.style.display = "flex"; }
         
-        // Открытие окна карты и инициализация мини-карты
         mapBtn.onclick = () => { 
             mapModal.style.display = "flex"; 
-            
             if (!miniMap) {
-                // Центруем на Алматы при первом открытии
                 miniMap = L.map('mini-map').setView([43.2389, 76.8897], 11);
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                     maxZoom: 19
                 }).addTo(miniMap);
 
-                // Слушаем клик по мини-карте
                 miniMap.on('click', function(e) {
                     if (miniMarker) { miniMap.removeLayer(miniMarker); }
                     miniMarker = L.marker(e.latlng, {icon: smallHeartIcon}).addTo(miniMap);
-                    
-                    // Записываем скрытые координаты
                     document.getElementById('new-map-lat').value = e.latlng.lat;
                     document.getElementById('new-map-lng').value = e.latlng.lng;
                 });
             }
-            
-            // ВАЖНО: Пересчитываем размер карты после того как окно стало видимым (display: flex)
             setTimeout(() => { miniMap.invalidateSize(); }, 200);
         }
 
@@ -290,7 +309,6 @@
             loveModal.style.display = "flex";
         }
 
-        // Закрытие окон
         closeBtn.onclick = () => { modal.style.display = "none"; }
         closeMapBtn.onclick = () => { mapModal.style.display = "none"; }
         closeLoveModal.onclick = () => { loveModal.style.display = "none"; }
@@ -331,6 +349,9 @@
                 await addDoc(collection(db, "user_memories"), {
                     date: formattedDate, title: titleVal, text: textVal, type: memoryType, image: imageUrl
                 });
+
+                // ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ В TELEGRAM
+                sendTelegramNotification(`❤️ <b>Добавлена новая история!</b>\n\n<b>Дата:</b> ${formattedDate}\n<b>Заголовок:</b> ${titleVal}\n<b>Текст:</b> ${textVal}`);
                 
                 statusMsg.innerText = "Готово! ❤️";
                 setTimeout(() => {
@@ -345,25 +366,18 @@
             } catch (e) { statusMsg.innerText = "Ошибка: " + e.message; }
         });
 
-        // --- СОХРАНЕНИЕ ТОЧКИ НА КАРТУ (УЛУЧШЕННЫЙ UX) ---
+        // --- СОХРАНЕНИЕ ТОЧКИ НА КАРТУ ---
         document.getElementById("submit-map-marker").addEventListener("click", async () => {
             const titleVal = document.getElementById("new-map-title").value;
             const descVal = document.getElementById("new-map-desc").value;
             const passVal = document.getElementById("new-map-password").value;
             const statusMsg = document.getElementById("map-status-msg");
             
-            // Читаем из скрытых инпутов
             const latVal = document.getElementById("new-map-lat").value;
             const lngVal = document.getElementById("new-map-lng").value;
 
             if (!titleVal || !descVal) { statusMsg.innerText = "Заполните название и описание!"; return; }
-            
-            // Проверяем, тапнул ли пользователь по карте
-            if (!latVal || !lngVal) { 
-                statusMsg.innerText = "Пожалуйста, тапните на место на мини-карте! 📍"; 
-                return; 
-            }
-            
+            if (!latVal || !lngVal) { statusMsg.innerText = "Пожалуйста, тапните на место на мини-карте! 📍"; return; }
             if (passVal !== SECRET_PASSWORD) { statusMsg.innerText = "Неверный пароль!"; return; }
 
             const lat = parseFloat(latVal);
@@ -372,11 +386,11 @@
             try {
                 statusMsg.innerText = "Отправляем на карту... ⏳";
                 await addDoc(collection(db, "map_markers"), {
-                    title: titleVal,
-                    desc: descVal,
-                    lat: lat,
-                    lng: lng
+                    title: titleVal, desc: descVal, lat: lat, lng: lng
                 });
+
+                // ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ В TELEGRAM
+                sendTelegramNotification(`📍 <b>Новое место на карте!</b>\n\n<b>Название:</b> ${titleVal}\n<b>Описание:</b> ${descVal}`);
                 
                 statusMsg.innerText = "Добавлено! 📍 Перезагрузка...";
                 setTimeout(() => { window.location.reload(); }, 1500);
