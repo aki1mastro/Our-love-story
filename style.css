@@ -153,14 +153,16 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
 }
 .add-btn:hover { transform: scale(1.1); }
 
-/* КНОПКА ДОБАВЛЕНИЯ МЕСТА (📍) - ТЕПЕРЬ СЛЕВА */
+/* КНОПКА ДОБАВЛЕНИЯ МЕСТА (📍) 
 .add-map-btn {
     position: fixed; 
-    bottom: 35px;  /* Идеальное выравнивание по центру относительно правой кнопки */
-    left: 30px;    /* Отправляем в левый нижний угол! */
-    width: 50px; height: 50px;
+    bottom: 30px;  /* Строго на одной линии с правой кнопкой */
+    left: 30px;    /* Симметрично в левом углу */
+    width: 60px; height: 60px; /* Размер теперь 60x60, как у плюса */
     background: white;
-    color: #0984e3; border-radius: 50%; font-size: 22px; border: none;
+    color: #0984e3; border-radius: 50%; 
+    font-size: 28px; /* Увеличили иконку для баланса */
+    border: none;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     cursor: pointer; z-index: 100; transition: transform 0.3s;
     display: flex; justify-content: center; align-items: center;
@@ -238,3 +240,4 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
     /* Высота карты на мобильном */
     #love-map { height: 350px; }
 }
+
