@@ -3,11 +3,11 @@
 
 /* --- 2. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ --- */
 :root {
-    --primary: #ff4b72;   /* Нежно-малиновый */
-    --secondary: #ff7e67; /* Персиковый */
+    --primary: #ff4b72;   
+    --secondary: #ff7e67; 
     --text-dark: #2d3436;
     --text-light: #636e72;
-    --bg-color: #fff0f3;  /* Очень светлый розовый для фона ленты */
+    --bg-color: #fff0f3;  
 }
 
 /* --- 3. ОСНОВНЫЕ НАСТРОЙКИ СТРАНИЦЫ --- */
@@ -18,15 +18,14 @@ body {
     box-sizing: border-box;
     background-color: var(--bg-color); 
     color: var(--text-dark);
-    overflow-x: hidden; /* Чтобы анимации не создавали горизонтальную прокрутку */
+    overflow-x: hidden; 
 }
 
-/* Красивый скроллбар */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
-/* --- 4. ШАПКА (HEADER) - С ЭФФЕКТОМ КИНО --- */
+/* --- 4. ШАПКА (HEADER) --- */
 .header {
     height: 100vh;
     display: flex;
@@ -36,32 +35,25 @@ body {
     color: white;
     padding: 0 20px;
     position: relative;
-    overflow: hidden; /* ВАЖНО: Обрезает картинку при увеличении */
-    
+    overflow: hidden; 
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-/* Виртуальный слой с картинкой для анимации Zoom */
 .header::before {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    
-    /* Твоя картинка */
     background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('main_bg.jpg');
     background-size: cover;
     background-position: center;
-    z-index: -1; /* Позади текста */
-    
-    /* АНИМАЦИЯ: Медленное приближение */
+    z-index: -1; 
     animation: zoomEffect 20s infinite alternate;
 }
 
 .header-content {
     z-index: 1;
-    /* АНИМАЦИЯ: Плавное появление текста */
     animation: fadeInUp 1.5s ease-out;
 }
 
@@ -78,7 +70,6 @@ body {
     opacity: 0.9;
 }
 
-/* Счетчик дней */
 .counter-box {
     margin-top: 30px;
     background: rgba(255, 255, 255, 0.2);
@@ -93,8 +84,7 @@ body {
 #days-count { font-size: 3.5rem; font-weight: 800; display: block; line-height: 1; }
 .label { font-size: 0.9rem; font-weight: 500; letter-spacing: 1px; }
 
-
-/* --- 5. ТРЕКЕР ВАХТЫ (Белая карточка) --- */
+/* --- 5. ТРЕКЕР ВАХТЫ --- */
 .tracker-container {
     max-width: 600px;
     margin: -40px auto 40px; 
@@ -112,249 +102,129 @@ body {
     border: 1px solid rgba(255,255,255,0.8);
 }
 
-.tracker-box h3 {
-    margin: 0;
-    color: #2d3436;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.progress-bar-bg {
-    width: 100%; height: 10px; background: #dfe6e9;
-    border-radius: 10px; overflow: hidden; margin: 15px 0 10px 0; display: none;
-}
-.progress-bar-fill {
-    height: 100%; background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%);
-    width: 0%; transition: width 1s ease-in-out;
-}
+.tracker-box h3 { margin: 0; color: #2d3436; font-size: 1.2rem; font-weight: 600; }
+.progress-bar-bg { width: 100%; height: 10px; background: #dfe6e9; border-radius: 10px; overflow: hidden; margin: 15px 0 10px 0; display: none; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%); width: 0%; transition: width 1s ease-in-out; }
 .tracker-days { color: #636e72; font-size: 0.9rem; margin: 0; }
 
+/* --- 6. ЛЕНТА ВРЕМЕНИ --- */
+.timeline { position: relative; max-width: 1000px; margin: 40px auto; padding: 0 20px 50px 20px; }
+.timeline::after { content: ''; position: absolute; width: 4px; background: linear-gradient(to bottom, var(--primary), var(--secondary)); top: 0; bottom: 0; left: 50%; margin-left: -2px; border-radius: 2px; opacity: 0.3; }
 
-/* --- 6. ЛЕНТА ВРЕМЕНИ (TIMELINE) --- */
-.timeline { 
-    position: relative; 
-    max-width: 1000px; 
-    margin: 40px auto; 
-    padding: 0 20px 100px 20px; 
-}
-
-.timeline::after {
-    content: ''; 
-    position: absolute; 
-    width: 4px; 
-    background: linear-gradient(to bottom, var(--primary), var(--secondary));
-    top: 0; bottom: 0; left: 50%; 
-    margin-left: -2px; 
-    border-radius: 2px;
-    opacity: 0.3;
-}
-
-.memory-container {
-    padding: 10px 40px; 
-    position: relative; 
-    width: 50%; 
-    box-sizing: border-box;
-    opacity: 0; 
-    transform: translateY(40px); 
-    transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+.memory-container { padding: 10px 40px; position: relative; width: 50%; box-sizing: border-box; opacity: 0; transform: translateY(40px); transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 .memory-container.show { opacity: 1; transform: translateY(0); }
-
 .left { left: 0; text-align: right; }
 .right { left: 50%; text-align: left; }
-
-.memory-container::after {
-    content: '❤'; 
-    position: absolute; 
-    width: 34px; height: 34px;
-    background-color: white; 
-    border: 3px solid var(--primary);
-    color: var(--primary);
-    top: 25px; 
-    border-radius: 50%; 
-    z-index: 10;
-    display: flex; justify-content: center; align-items: center; 
-    font-size: 16px;
-    box-shadow: 0 0 10px rgba(255, 75, 114, 0.2);
-}
+.memory-container::after { content: '❤'; position: absolute; width: 34px; height: 34px; background-color: white; border: 3px solid var(--primary); color: var(--primary); top: 25px; border-radius: 50%; z-index: 10; display: flex; justify-content: center; align-items: center; font-size: 16px; box-shadow: 0 0 10px rgba(255, 75, 114, 0.2); }
 .left::after { right: -20px; }
 .right::after { left: -20px; }
 
-/* --- 7. КАРТОЧКА С КОНТЕНТОМ (БЕЛАЯ + ЭФФЕКТЫ) --- */
-.content {
-    padding: 25px; 
-    background: white; 
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); 
-    position: relative;
-    max-width: 420px; 
-    border: 1px solid rgba(0,0,0,0.02);
-    
-    /* Пружинистая анимация при наведении */
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-}
+/* --- 7. КАРТОЧКА С КОНТЕНТОМ --- */
+.content { padding: 25px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); position: relative; max-width: 420px; border: 1px solid rgba(0,0,0,0.02); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .left .content { margin-left: auto; border-bottom-right-radius: 0; }
 .right .content { margin-right: auto; border-bottom-left-radius: 0; }
+.content:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(255, 75, 114, 0.15); z-index: 5; }
 
-/* Эффект свечения при наведении */
-.content:hover { 
-    transform: translateY(-8px) scale(1.02); 
-    box-shadow: 0 20px 40px rgba(255, 75, 114, 0.15); 
-    z-index: 5;
-}
-
-.date { 
-    font-family: 'Caveat', cursive;
-    color: var(--primary); 
-    font-size: 1.6rem; 
-    margin-bottom: 5px; 
-    display: block;
-}
+.date { font-family: 'Caveat', cursive; color: var(--primary); font-size: 1.6rem; margin-bottom: 5px; display: block; }
 h2 { margin: 0 0 10px 0; font-size: 1.4rem; color: var(--text-dark); line-height: 1.2; }
-
 .description { font-size: 1rem; line-height: 1.6; color: var(--text-light); margin: 0; }
-
-.chat-quote {
-    background: #f1f2f6; 
-    padding: 15px 20px; 
-    border-radius: 15px;
-    margin: 10px 0 0 0; 
-    color: var(--text-dark); 
-    text-align: left;
-    font-size: 0.95rem; 
-    border-left: 4px solid var(--primary);
-}
+.chat-quote { background: #f1f2f6; padding: 15px 20px; border-radius: 15px; margin: 10px 0 0 0; color: var(--text-dark); text-align: left; font-size: 0.95rem; border-left: 4px solid var(--primary); }
 .chat-quote b { color: var(--primary); display: block; margin-bottom: 3px; }
-
-.event-text {
-    background: #fff0f3;
-    color: #d63031;
-    padding: 15px;
-    border-radius: 15px;
-    border: 1px dashed #ff7675;
-}
-
-.img-container {
-    width: 100%; margin-top: 15px; border-radius: 15px; overflow: hidden;
-}
+.event-text { background: #fff0f3; color: #d63031; padding: 15px; border-radius: 15px; border: 1px dashed #ff7675; }
+.img-container { width: 100%; margin-top: 15px; border-radius: 15px; overflow: hidden; }
 .img-container img { width: 100%; height: auto; display: block; }
 
-
 /* --- 8. СТАТИСТИКА И ФУТЕР --- */
-.stats { 
-    background: white; 
-    padding: 60px 20px; 
-    text-align: center; 
-    margin-top: 50px;
-    border-top: 1px solid rgba(0,0,0,0.05); 
-}
+.stats { background: white; padding: 60px 20px; text-align: center; margin-top: 50px; border-top: 1px solid rgba(0,0,0,0.05); }
 .stats-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
 .stat-item h3 { font-size: 2.5rem; color: var(--primary); margin: 0; font-weight: 800;}
 .stat-item p { color: var(--text-light); font-weight: 500; margin-top: 5px;}
-
-footer { 
-    background: var(--text-dark); 
-    color: white; 
-    text-align: center; 
-    padding: 30px 20px; 
-    font-weight: 300;
-}
+footer { background: var(--text-dark); color: white; text-align: center; padding: 30px 20px; font-weight: 300; }
 
 /* --- 9. КНОПКИ УПРАВЛЕНИЯ --- */
-.add-btn {
-    position: fixed; bottom: 30px; right: 30px;
-    width: 60px; height: 60px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white; border-radius: 50%; font-size: 30px; border: none;
-    box-shadow: 0 10px 25px rgba(255, 75, 114, 0.4);
+.add-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: 50%; font-size: 30px; border: none; box-shadow: 0 10px 25px rgba(255, 75, 114, 0.4); cursor: pointer; z-index: 100; transition: transform 0.3s; display: flex; justify-content: center; align-items: center; }
+.add-btn:hover { transform: scale(1.1); }
+
+/* НОВАЯ КНОПКА ДОБАВЛЕНИЯ МЕСТА (📍) */
+.add-map-btn {
+    position: fixed; bottom: 100px; right: 30px; /* Висит над плюсиком */
+    width: 50px; height: 50px;
+    background: white;
+    color: #0984e3; border-radius: 50%; font-size: 22px; border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     cursor: pointer; z-index: 100; transition: transform 0.3s;
     display: flex; justify-content: center; align-items: center;
 }
-.add-btn:hover { transform: scale(1.1); }
-
-/* Пасхалка */
-.magic-heart {
-    position: fixed; bottom: 30px; left: 30px;
-    width: 50px; height: 50px;
-    background: white; color: var(--primary);
-    border-radius: 50%; font-size: 24px; border: none;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    cursor: pointer; z-index: 100;
-}
+.add-map-btn:hover { transform: scale(1.1); }
 
 /* --- 10. МОДАЛЬНОЕ ОКНО --- */
-.modal {
-    display: none; position: fixed; z-index: 200; left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0, 0.6);
-    justify-content: center; align-items: center;
-}
-.modal-content {
-    background: white; padding: 30px; border-radius: 20px;
-    width: 90%; max-width: 400px; position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-}
-.close-btn {
-    position: absolute; right: 20px; top: 15px;
-    font-size: 28px; cursor: pointer; color: #b2bec3;
-}
-.modal-content input, .modal-content textarea {
-    width: 100%; padding: 12px; margin: 8px 0;
-    border: 1px solid #dfe6e9; border-radius: 10px;
-    box-sizing: border-box; font-family: inherit;
-}
-.modal-content button.save-btn {
-    width: 100%; padding: 12px; margin-top: 15px;
-    background: var(--primary); color: white; border: none; 
-    border-radius: 10px; font-size: 1rem; cursor: pointer;
+.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0, 0.6); justify-content: center; align-items: center; }
+.modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+.close-btn { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #b2bec3; }
+.modal-content input, .modal-content textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #dfe6e9; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
+.modal-content button.save-btn { width: 100%; padding: 12px; margin-top: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; }
+
+/* --- 11. АНИМАЦИИ --- */
+@keyframes zoomEffect { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- 12. ИНТЕРАКТИВНАЯ КАРТА --- */
+.map-section {
+    width: 100%;
+    max-width: 1000px;
+    margin: 60px auto 20px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10;
 }
 
-
-/* --- 11. АНИМАЦИИ (ВЫНЕСЕНЫ ИЗ MEDIA QUERY) --- */
-
-/* 1. Эффект приближения фона */
-@keyframes zoomEffect {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.15); } /* Увеличиваем на 15% */
+/* ЗАДАЕМ ВЫСОТУ КАРТЕ (иначе она невидима) */
+#love-map {
+    width: 100%;
+    height: 450px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    background-color: #f1f2f6; 
+    z-index: 1; 
 }
 
-/* 2. Всплытие текста снизу */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.custom-map-marker {
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+    text-shadow: 0 5px 15px rgba(255, 75, 114, 0.6);
+    transition: transform 0.2s ease-in-out;
 }
 
+.custom-map-marker:hover { transform: scale(1.3); cursor: pointer; }
+.leaflet-popup-content-wrapper { border-radius: 15px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important; padding: 5px !important; }
+.leaflet-popup-content { margin: 12px 15px !important; text-align: center; line-height: 1.4; }
+.leaflet-popup-tip-container { display: none; }
 
-/* --- 12. АДАПТИВ ДЛЯ ТЕЛЕФОНОВ --- */
+
+/* --- 13. АДАПТИВ ДЛЯ ТЕЛЕФОНОВ --- */
 @media screen and (max-width: 768px) {
-    /* Таймлайн сбоку */
     .timeline::after { left: 30px; }
     .memory-container { width: 100%; padding-left: 70px; padding-right: 20px; }
     .left, .right { left: 0; text-align: left; }
     .left::after, .right::after { left: 11px; }
     
-    /* Шапка */
     .header h1 { font-size: 2.5rem; }
     .counter-box { padding: 10px 30px; }
     #days-count { font-size: 2.8rem; }
     
-    /* Трекер */
     .tracker-container { margin-top: -30px; }
     .tracker-box { padding: 15px 20px; }
     .tracker-box h3 { font-size: 1rem; }
     
-    /* Убираем лишние отступы у карточек */
     .left .content, .right .content { margin: 0; border-radius: 15px; }
-    
-    /* Слегка уменьшаем анимацию на телефоне */
-    .content:hover {
-        transform: none !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
-    }
+    .content:hover { transform: none !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important; }
+
+    /* Высота карты на мобильном */
+    #love-map { height: 350px; }
 }
