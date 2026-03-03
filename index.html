@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сабина и Аким | Наша История</title>
     <link rel="stylesheet" href="style.css">
+    <script src="codex.js"></script> 
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -32,6 +33,10 @@
         </div>
     </div>
 
+    <div style="text-align: center; margin-bottom: 30px; margin-top: -10px; position: relative; z-index: 10;">
+        <button id="open-codex-btn" class="codex-btn">📜 Наш Кодекс</button>
+    </div>
+
     <section class="timeline" id="timeline-container">
         </section>
 
@@ -42,6 +47,16 @@
 
     <button id="add-map-btn" class="add-map-btn" title="Добавить место на карту">📍</button>
     <button id="add-btn" class="add-btn" title="Добавить историю">+</button>
+
+    <div id="codex-modal" class="modal">
+        <div class="modal-content codex-modal-content">
+            <span class="close-btn" id="close-codex-modal">&times;</span>
+            <h2 style="margin-top: 0; color: #2d3436; text-align: center; font-family: 'Montserrat', sans-serif;">📜 Кодекс</h2>
+            <ul class="codex-list" id="codex-list-container">
+                <p style="text-align: center; color: #636e72;">Загрузка правил... ⏳</p>
+            </ul>
+        </div>
+    </div>
 
     <div id="add-modal" class="modal">
         <div class="modal-content">
@@ -134,9 +149,6 @@
         const SECRET_PASSWORD = "1404"; 
         const container = document.getElementById('timeline-container');
 
-        // ==========================================
-        // НАСТРОЙКИ TELEGRAM (ДАННЫЕ ОБНОВЛЕНЫ)
-        // ==========================================
         const TELEGRAM_BOT_TOKEN = "8676989738:AAEWlwAMKJVBmrmAWrYPnQlZXE-zxTiz3lw"; 
         const TELEGRAM_CHAT_ID = "338255825";              
 
@@ -156,7 +168,6 @@
                 console.error("Ошибка отправки в Telegram:", error);
             }
         }
-        // ==========================================
 
         function parseDate(dateStr) {
             if (!dateStr || !dateStr.includes('.')) return new Date();
@@ -164,7 +175,6 @@
             return new Date(`${year}-${month}-${day}`);
         }
 
-        // --- 1. ЛОГИКА ИСТОРИЙ ---
         function renderTimeline(allData) {
             container.innerHTML = ""; 
             allData.sort((a, b) => parseDate(a.date) - parseDate(b.date));
@@ -211,7 +221,6 @@
 
         loadAllMemories();
 
-        // --- 2. ЛОГИКА ГЛАВНОЙ КАРТЫ ---
         async function initAndLoadMap() {
             const mapContainer = document.getElementById('love-map');
             if (!mapContainer) return;
@@ -257,7 +266,6 @@
         }
         initAndLoadMap();
 
-        // --- 3. ЛОГИКА МОДАЛЬНЫХ ОКОН И МИНИ-КАРТЫ ---
         const modal = document.getElementById("add-modal");
         const btn = document.getElementById("add-btn");
         const closeBtn = document.getElementById("close-modal");
@@ -269,6 +277,35 @@
         const loveModal = document.getElementById("love-modal");
         const secretTrigger = document.getElementById("secret-trigger");
         const closeLoveModal = document.getElementById("close-love-modal");
+
+        // --- ЛОГИКА КОДЕКСА ---
+        const codexModal = document.getElementById("codex-modal");
+        const codexBtn = document.getElementById("open-codex-btn");
+        const closeCodexBtn = document.getElementById("close-codex-modal");
+        const codexListContainer = document.getElementById("codex-list-container");
+
+        codexBtn.onclick = () => { 
+            codexModal.style.display = "flex"; 
+            
+            if (codexListContainer.innerHTML.includes("Загрузка")) {
+                if (window.codexRules) {
+                    codexListContainer.innerHTML = window.codexRules.map((rule, index) => `
+                        <li>
+                            <span class="rule-num">${index + 1}.</span> 
+                            <div style="flex: 1;">
+                                <strong>${rule.title}</strong><br>
+                                ${rule.text}<br>
+                                <i style="color: #ff4b72; font-size: 0.95em; display: block; margin-top: 5px;">${rule.highlight}</i>
+                            </div>
+                        </li>
+                    `).join('');
+                } else {
+                    codexListContainer.innerHTML = "<p style='text-align:center;'>Не удалось загрузить кодекс 😔 Проверьте файл codex.js</p>";
+                }
+            }
+        }
+        closeCodexBtn.onclick = () => { codexModal.style.display = "none"; }
+        // -------------------------------------
 
         let miniMap;
         let miniMarker;
@@ -313,9 +350,9 @@
             if (event.target == modal) modal.style.display = "none";
             if (event.target == mapModal) mapModal.style.display = "none";
             if (event.target == loveModal) loveModal.style.display = "none";
+            if (event.target == codexModal) codexModal.style.display = "none";
         });
 
-        // --- СОХРАНЕНИЕ ИСТОРИИ ---
         document.getElementById("submit-memory").addEventListener("click", async () => {
             const dateVal = document.getElementById("new-date").value;
             const titleVal = document.getElementById("new-title").value;
@@ -346,7 +383,6 @@
                     date: formattedDate, title: titleVal, text: textVal, type: memoryType, image: imageUrl
                 });
 
-                // Уведомление
                 sendTelegramNotification(`❤️ <b>Добавлена новая история!</b>\n\n<b>Дата:</b> ${formattedDate}\n<b>Заголовок:</b> ${titleVal}\n<b>Текст:</b> ${textVal}`);
                 
                 statusMsg.innerText = "Готово! ❤️";
@@ -362,7 +398,6 @@
             } catch (e) { statusMsg.innerText = "Ошибка: " + e.message; }
         });
 
-        // --- СОХРАНЕНИЕ ТОЧКИ НА КАРТУ ---
         document.getElementById("submit-map-marker").addEventListener("click", async () => {
             const titleVal = document.getElementById("new-map-title").value;
             const descVal = document.getElementById("new-map-desc").value;
@@ -385,7 +420,6 @@
                     title: titleVal, desc: descVal, lat: lat, lng: lng
                 });
 
-                // Уведомление
                 sendTelegramNotification(`📍 <b>Новое место на карте!</b>\n\n<b>Название:</b> ${titleVal}\n<b>Описание:</b> ${descVal}`);
                 
                 statusMsg.innerText = "Добавлено! 📍 Перезагрузка...";
@@ -393,7 +427,6 @@
             } catch (e) { statusMsg.innerText = "Ошибка: " + e.message; }
         });
 
-        // Анимация
         function checkScroll() {
             const items = document.querySelectorAll('.memory-container');
             const triggerBottom = window.innerHeight / 5 * 4;
@@ -462,4 +495,3 @@
     </script>
 </body>
 </html>
-
