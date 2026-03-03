@@ -107,7 +107,61 @@ body {
 .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff9a9e 0%, #ff4b72 100%); width: 0%; transition: width 1s ease-in-out; }
 .tracker-days { color: #636e72; font-size: 0.9rem; margin: 0; }
 
-/* --- 6. ЛЕНТА ВРЕМЕНИ --- */
+/* --- 6. НАШ КОДЕКС (ПРЕМИУМ КНОПКА И МОДАЛКА) --- */
+.codex-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 16px 45px;
+    border: none;
+    border-radius: 40px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 25px rgba(255, 75, 114, 0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.codex-btn:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(255, 75, 114, 0.6);
+}
+
+.codex-modal-content {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.codex-list { list-style: none; padding: 0; margin: 0; }
+.codex-list li {
+    font-size: 1.05rem;
+    color: #2d3436;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    line-height: 1.5;
+    background: #fdfbfb;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #f1f2f6;
+    text-align: left;
+}
+
+.codex-list li span.rule-num {
+    color: var(--primary);
+    font-weight: bold;
+    margin-right: 12px;
+    font-size: 1.2rem;
+    min-width: 25px;
+}
+
+/* --- 7. ЛЕНТА ВРЕМЕНИ --- */
 .timeline { position: relative; max-width: 1000px; margin: 40px auto; padding: 0 20px 50px 20px; }
 .timeline::after { content: ''; position: absolute; width: 4px; background: linear-gradient(to bottom, var(--primary), var(--secondary)); top: 0; bottom: 0; left: 50%; margin-left: -2px; border-radius: 2px; opacity: 0.3; }
 
@@ -119,7 +173,7 @@ body {
 .left::after { right: -20px; }
 .right::after { left: -20px; }
 
-/* --- 7. КАРТОЧКА С КОНТЕНТОМ --- */
+/* --- 8. КАРТОЧКА С КОНТЕНТОМ --- */
 .content { padding: 25px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); position: relative; max-width: 420px; border: 1px solid rgba(0,0,0,0.02); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .left .content { margin-left: auto; border-bottom-right-radius: 0; }
 .right .content { margin-right: auto; border-bottom-left-radius: 0; }
@@ -134,18 +188,17 @@ h2 { margin: 0 0 10px 0; font-size: 1.4rem; color: var(--text-dark); line-height
 .img-container { width: 100%; margin-top: 15px; border-radius: 15px; overflow: hidden; }
 .img-container img { width: 100%; height: auto; display: block; }
 
-/* --- 8. СТАТИСТИКА И ФУТЕР --- */
+/* --- 9. СТАТИСТИКА И ФУТЕР --- */
 .stats { background: white; padding: 60px 20px; text-align: center; margin-top: 50px; border-top: 1px solid rgba(0,0,0,0.05); }
 .stats-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
 .stat-item h3 { font-size: 2.5rem; color: var(--primary); margin: 0; font-weight: 800;}
 .stat-item p { color: var(--text-light); font-weight: 500; margin-top: 5px;}
 footer { background: var(--text-dark); color: white; text-align: center; padding: 30px 20px; font-weight: 300; }
 
-/* --- 9. КНОПКИ УПРАВЛЕНИЯ --- */
-/* Общие стили для обеих кнопок */
+/* --- 10. КНОПКИ УПРАВЛЕНИЯ --- */
 .add-btn, .add-map-btn {
     position: fixed;
-    bottom: 30px; /* Одинаковый отступ от низа */
+    bottom: 30px; 
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -157,8 +210,6 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
     justify-content: center;
     align-items: center;
 }
-
-/* Кнопка ПЛЮС (Справа) */
 .add-btn {
     right: 30px;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -166,33 +217,29 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
     font-size: 30px;
     box-shadow: 0 10px 25px rgba(255, 75, 114, 0.4);
 }
-
-/* Кнопка КАРТА (Слева) */
 .add-map-btn {
     left: 30px;
     background: white;
     color: #0984e3;
-    font-size: 28px; /* Чуть увеличил иконку 📍 для баланса */
+    font-size: 28px; 
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
-
-/* Эффект при наведении для обеих */
 .add-btn:hover, .add-map-btn:hover {
     transform: scale(1.1);
 }
 
-/* --- 10. МОДАЛЬНОЕ ОКНО --- */
+/* --- 11. ОСТАЛЬНЫЕ МОДАЛЬНЫЕ ОКНА --- */
 .modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0, 0.6); justify-content: center; align-items: center; }
 .modal-content { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
 .close-btn { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #b2bec3; }
 .modal-content input, .modal-content textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #dfe6e9; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
 .modal-content button.save-btn { width: 100%; padding: 12px; margin-top: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; }
 
-/* --- 11. АНИМАЦИИ --- */
+/* --- 12. АНИМАЦИИ --- */
 @keyframes zoomEffect { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- 12. ИНТЕРАКТИВНАЯ КАРТА --- */
+/* --- 13. ИНТЕРАКТИВНАЯ КАРТА --- */
 .map-section {
     width: 100%;
     max-width: 1000px;
@@ -202,8 +249,6 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
     position: relative;
     z-index: 10;
 }
-
-/* ЗАДАЕМ ВЫСОТУ КАРТЕ (иначе она невидима) */
 #love-map {
     width: 100%;
     height: 450px;
@@ -213,7 +258,6 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
     background-color: #f1f2f6; 
     z-index: 1; 
 }
-
 .custom-map-marker {
     font-size: 26px;
     display: flex;
@@ -224,14 +268,13 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
     text-shadow: 0 5px 15px rgba(255, 75, 114, 0.6);
     transition: transform 0.2s ease-in-out;
 }
-
 .custom-map-marker:hover { transform: scale(1.3); cursor: pointer; }
 .leaflet-popup-content-wrapper { border-radius: 15px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important; padding: 5px !important; }
 .leaflet-popup-content { margin: 12px 15px !important; text-align: center; line-height: 1.4; }
 .leaflet-popup-tip-container { display: none; }
 
 
-/* --- 13. АДАПТИВ ДЛЯ ТЕЛЕФОНОВ --- */
+/* --- 14. АДАПТИВ ДЛЯ ТЕЛЕФОНОВ --- */
 @media screen and (max-width: 768px) {
     .timeline::after { left: 30px; }
     .memory-container { width: 100%; padding-left: 70px; padding-right: 20px; }
@@ -249,6 +292,5 @@ footer { background: var(--text-dark); color: white; text-align: center; padding
     .left .content, .right .content { margin: 0; border-radius: 15px; }
     .content:hover { transform: none !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important; }
 
-    /* Высота карты на мобильном */
     #love-map { height: 350px; }
 }
