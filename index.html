@@ -15,29 +15,46 @@
     <!-- ЭКРАН АВТОРИЗАЦИИ -->
     <div id="auth-overlay" style="
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: linear-gradient(135deg, #ff9a9e, #ff4b72);
+        background: #fff0f3;
         display: flex; flex-direction: column;
         justify-content: center; align-items: center;
         z-index: 9999; text-align: center; padding: 20px; box-sizing: border-box;
+        overflow: hidden;
     ">
-        <div style="font-size: 5rem; margin-bottom: 10px;">❤️</div>
-        <h1 style="color: white; font-family: 'Segoe UI', sans-serif; font-size: 2rem; margin: 0 0 10px 0;">Сабина & Аким</h1>
-        <p style="color: rgba(255,255,255,0.85); font-size: 1rem; margin-bottom: 30px;">Войдите через Google чтобы открыть нашу историю</p>
+        <div style="position: absolute; top: -20px; left: -20px; font-size: 120px; opacity: 0.07; pointer-events: none;">🌸</div>
+        <div style="position: absolute; bottom: -20px; right: -20px; font-size: 120px; opacity: 0.07; pointer-events: none;">🌸</div>
+        <div style="position: absolute; top: 60px; right: 30px; font-size: 80px; opacity: 0.09; pointer-events: none;">🌸</div>
+        <div style="position: absolute; bottom: 80px; left: 30px; font-size: 70px; opacity: 0.08; pointer-events: none;">🌸</div>
+
+        <div style="font-size: 5rem; margin-bottom: 12px; animation: pulse 2s ease-in-out infinite;">❤️</div>
+        <h1 style="color: #c0394b; font-family: Georgia, serif; font-size: 2.2rem; margin: 0 0 8px 0; font-style: italic; font-weight: 700;">Сабина & Аким</h1>
+        <p style="color: #c0394b; opacity: 0.65; font-size: 0.9rem; margin: 0 0 32px 0; letter-spacing: 2px;">Только для нас двоих</p>
+
         <button id="google-sign-in-btn" style="
-            background: white; color: #2d3436;
-            border: none; padding: 14px 30px;
+            background: #c0394b;
+            color: white;
+            border: none; padding: 14px 36px;
             border-radius: 30px; font-size: 1rem;
             font-weight: 600; cursor: pointer;
             display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        ">
+            box-shadow: 0 8px 25px rgba(192, 57, 75, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 30px rgba(192,57,75,0.45)'"
+           onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 25px rgba(192,57,75,0.35)'">
             <img src="https://www.google.com/favicon.ico" width="20" height="20">
             Войти через Google
         </button>
-        <p id="auth-error" style="color: white; margin-top: 15px; font-size: 0.9rem; display: none;">
+
+        <p id="auth-error" style="color: #c0394b; margin-top: 20px; font-size: 0.9rem; display: none;">
             ❌ Доступ запрещён. Этот сайт только для нас двоих ❤️
         </p>
+
+        <style>
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.08); }
+            }
+        </style>
     </div>
 
     <header class="header">
