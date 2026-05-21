@@ -205,9 +205,20 @@
 
         document.getElementById('google-sign-in-btn').addEventListener('click', async () => {
             try {
-                await signInWithPopup(auth, provider);
+                const result = await signInWithPopup(auth, provider);
+                const email = result.user.email;
+                if (!ALLOWED_EMAILS.includes(email)) {
+                    await signOut(auth);
+                    authError.style.display = 'block';
+                    authError.innerText = `❌ Доступ запрещён для ${email}. Этот сайт только для нас двоих ❤️`;
+                } else {
+                    authOverlay.style.display = 'none';
+                    initApp();
+                }
             } catch (e) {
-                console.error("Ошибка входа:", e);
+                if (e.code !== 'auth/popup-closed-by-user') {
+                    console.error("Ошибка входа:", e);
+                }
             }
         });
 
@@ -215,9 +226,6 @@
             if (user && ALLOWED_EMAILS.includes(user.email)) {
                 authOverlay.style.display = 'none';
                 initApp();
-            } else if (user) {
-                authError.style.display = 'block';
-                signOut(auth);
             }
         });
 
