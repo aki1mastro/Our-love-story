@@ -303,10 +303,12 @@
         function initApp() {
 
         const SECRET_PASSWORD = "1404"; 
-        const container = document.getElementById('timeline-container');
+        const container = document.getElementById('timeline-container');        
 
         const TELEGRAM_BOT_TOKEN = "8676989738:AAEWlwAMKJVBmrmAWrYPnQlZXE-zxTiz3lw"; 
-        const TELEGRAM_CHAT_ID = "338255825", "2064494759";              
+        // Теперь это массив (список) в квадратных скобках. Идентификаторы пишем в кавычках через запятую:
+        const TELEGRAM_CHAT_IDS = ["338255825", "2064494759"]; 
+
 
         async function sendTelegramNotification(text) {
             const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
